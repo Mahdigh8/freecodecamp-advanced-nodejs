@@ -78,9 +78,15 @@ module.exports = function (app, myDataBase) {
     "/auth/github/callback",
     passport.authenticate("github", { failureRedirect: "/" }),
     (req, res) => {
-      res.redirect("/profile");
+      req.session.user_id = req.user.id;
+      res.redirect("/chat");
     }
   );
+
+  app.get("/chat", ensureAuthenticated, (req, res) => {
+    res.render("pug/chat", { user: req.user });
+  });
+
   app.use((req, res, next) => {
     res.status(404).type("text").send("Not Found");
   });
