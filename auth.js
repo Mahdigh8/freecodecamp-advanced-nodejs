@@ -4,14 +4,18 @@ const LocalStrategy = require("passport-local");
 const GitHubStrategy = require("passport-github").Strategy;
 const bcrypt = require("bcrypt");
 const ObjectID = require("mongodb").ObjectID;
+const MongoStore = require("connect-mongo")(session);
 require("dotenv").config();
 
 module.exports = function (app, myDataBase) {
+  const store = new MongoStore({ url: process.env.MONGO_URI });
   app.use(
     session({
+      key: "express.sid",
       secret: process.env.SESSION_SECRET,
       resave: true,
       saveUninitialized: true,
+      store: store,
       cookie: { secure: false },
     })
   );
